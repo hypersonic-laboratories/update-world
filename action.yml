@@ -156,7 +156,6 @@ runs:
           ASSETS_ARRAY+="$asset,"
         done
         ASSETS_ARRAY=$(echo $ASSETS_ARRAY | sed 's/,$//')"]"
-        echo "world_name=$SERVER_NAME" >> $GITHUB_OUTPUT
         echo "world_description=$SERVER_DESCRIPTION" >> $GITHUB_OUTPUT
         echo "gamemode=$GAME_MODE" >> $GITHUB_OUTPUT
         echo "gamemap=$MAP" >> $GITHUB_OUTPUT
@@ -172,7 +171,6 @@ runs:
         ACCESS_TOKEN: ${{ inputs.access_token }}
         MASTER_ENDPOINT: ${{ inputs.master_endpoint }}
         TITLE: ${{ inputs.title }}
-        DESCRIPTION: ${{ inputs.description }}
         MAX_PLAYERS: ${{ inputs.max_players }}
         TYPE_ID: ${{ inputs.type_id }}
         METADATA: ${{ inputs.metadata }}
@@ -191,10 +189,13 @@ runs:
         LOADING_SCREEN: ${{ inputs.loading_screen }}
         IS_PUBLIC: ${{ inputs.is_public }}
         LINKS: ${{ inputs.links }}
-        PACKAGES: ${{ inputs.packages }}
         FULL_DESCRIPTION: ${{ inputs.full_description }}
         CAN_JOIN_DURING_MATCH: ${{ inputs.can_join_during_match }}
-        ASSETS: ${{ inputs.assets }}
+        ASSETS: ${{ inputs.assets || steps.parse_toml.outputs.assets }}
+        PACKAGES: ${{ inputs.packages || steps.parse_toml.outputs.packages }}
+        GAMEMAP: ${{ inputs.gamemap || steps.parse_toml.outputs.gamemap }}
+        GAMEMODE: ${{ inputs.gamemode || steps.parse_toml.outputs.gamemode }}
+        DESCRIPTION: ${{ inputs.description || steps.parse_toml.outputs.world_description }}
       run: |
         ASSETS="${ASSETS//\'/\"}"
         json_payload="{"
@@ -223,7 +224,6 @@ runs:
         [ ! -z "$LOADING_SCREEN" ] && json_payload+="\"loading_screen\": \"$LOADING_SCREEN\","
         [ ! -z "$IS_PUBLIC" ] && json_payload+="\"is_public\": $IS_PUBLIC,"
         [ ! -z "$LINKS" ] && json_payload+="\"links\": $LINKS,"
-        [ ! -z "$PACKAGES" ] && json_payload+="\"packages\": $PACKAGES,"
         [ ! -z "$FULL_DESCRIPTION" ] && json_payload+="\"full_description\": \"$FULL_DESCRIPTION\","
         [ ! -z "$CAN_JOIN_DURING_MATCH" ] && json_payload+="\"can_join_during_match\": $CAN_JOIN_DURING_MATCH,"
         [ ! -z "$PACKAGES" ] && json_payload+="\"packages\": $PACKAGES,"

@@ -8,7 +8,6 @@ inputs:
   world_name:
     description: 'You need to provide the world name'
     required: true
-    default: ''
   master_endpoint:
     description: 'Defaults to https://api.helixgame.com/v1'
     required: false
@@ -121,21 +120,17 @@ runs:
         ACCESS_TOKEN: ${{ inputs.access_token }}
         MASTER_ENDPOINT: ${{ inputs.master_endpoint }}
       run: |
-        if [ "$WORLD_ID" != "" ]; then
-          response=$(curl --no-progress-meter --location "${MASTER_ENDPOINT}/world/${WORLD_NAME}" --header "Token: ${ACCESS_TOKEN}")
-          code=$(echo $response | jq -r '.code')
-          message=$(echo $response | jq -r '.message')
-          if [ "$code" != "0" ]; then
-            if [ "$message" == "world corrupted" ]; then
-              echo "Error: Make sure you've created this world on the HELIX Hub first: https://hub.helixgame.com/creations/worlds"
-            else
-              echo "Error: Server returned error code $code with message '$message'"
-            fi
-            exit 1
+        response=$(curl --no-progress-meter --location "${MASTER_ENDPOINT}/world/${WORLD_NAME}" --header "Token: ${ACCESS_TOKEN}")
+        echo $response
+        code=$(echo $response | jq -r '.code')
+        message=$(echo $response | jq -r '.message')
+        if [ "$code" != "0" ]; then
+          if [ "$message" == "world corrupted" ]; then
+            echo "Error: Make sure you've created this world on the HELIX Hub first: https://hub.helixgame.com/creations/worlds"
+          else
+            echo "Error: Server returned error code $code with message '$message'"
           fi
-          echo "world_id=$(echo $response | jq -r '.payload.id')" >> $GITHUB_OUTPUT
-          echo "world_name=$(echo $response | jq -r '.payload.name')" >> $GITHUB_OUTPUT
-          exit 0
+          exit 1
         fi
         echo "world_id=$(echo $response | jq -r '.payload.id')" >> $GITHUB_OUTPUT
         echo "world_name=$(echo $response | jq -r '.payload.name')" >> $GITHUB_OUTPUT

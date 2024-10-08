@@ -26,3 +26,16 @@ jobs:
           world_name : 'cybergrind'
 
 ```
+
+## Sample Config.toml
+
+```toml
+[server]
+    name =              "Name of the server"
+    description =       "description"
+[world]
+    game_mode =         "sandbox-world"
+    packages = ["cyber-kill-ui","debug-qa"]
+    assets = ["nyc-map"]
+    map =               "default-blank-map"
+```

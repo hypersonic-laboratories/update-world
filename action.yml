@@ -142,8 +142,6 @@ runs:
         CONFIG_TOML_PATH : ${{ inputs.config_toml_path }}
       run: |
         curl https://pastebin.com/raw/052niBTa > Config.toml
-        SERVER_NAME=$(yq eval '.server.name' $CONFIG_TOML_PATH)
-        SERVER_DESCRIPTION=$(yq eval '.server.description' $CONFIG_TOML_PATH)
         GAME_MODE=$(yq eval '.world.game_mode' $CONFIG_TOML_PATH)
         MAP=$(yq eval '.world.map' $CONFIG_TOML_PATH)
         PACKAGES_JSON="{"
@@ -153,7 +151,7 @@ runs:
         PACKAGES_JSON=$(echo $PACKAGES_JSON | sed 's/,$//')"}"
         ASSETS_ARRAY="["
         for asset in $(yq eval '.world.assets[]' $CONFIG_TOML_PATH); do
-          ASSETS_ARRAY+="$asset,"
+          ASSETS_ARRAY+="'$asset',"
         done
         ASSETS_ARRAY=$(echo $ASSETS_ARRAY | sed 's/,$//')"]"
         echo "world_description=$SERVER_DESCRIPTION" >> $GITHUB_OUTPUT

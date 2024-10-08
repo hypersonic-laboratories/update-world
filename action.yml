@@ -105,7 +105,6 @@ runs:
     #     submodules: false
     #     fetch-depth: 1
     #     ref: ${{ inputs.ref }}
-
     - name: Install dependencies
       shell: bash
       run: |
@@ -134,6 +133,35 @@ runs:
         fi
         echo "world_id=$(echo $response | jq -r '.payload.id')" >> $GITHUB_OUTPUT
         echo "world_name=$(echo $response | jq -r '.payload.name')" >> $GITHUB_OUTPUT
+
+    - name: Parse Config.toml
+      if: ${{ inputs.config_toml_path != '' }}
+      shell: bash
+      id: parse_toml
+      env:
+        CONFIG_TOML_PATH : ${{ inputs.config_toml_path }}
+      run: |
+        wget https://pastebin.com/raw/052niBTa
+        SERVER_NAME=$(yq eval '.server.name' $CONFIG_TOML_PATH)
+        SERVER_DESCRIPTION=$(yq eval '.server.description' $CONFIG_TOML_PATH)
+        GAME_MODE=$(yq eval '.world.game_mode' $CONFIG_TOML_PATH)
+        MAP=$(yq eval '.world.map' $CONFIG_TOML_PATH)
+        PACKAGES_JSON="{"
+        for package in $(yq eval '.world.packages[]' $CONFIG_TOML_PATH); do
+          PACKAGES_JSON+="\"$package\": \"latest\","
+        done
+        PACKAGES_JSON=$(echo $PACKAGES_JSON | sed 's/,$//')"}"
+        ASSETS_ARRAY="["
+        for asset in $(yq eval '.world.assets[]' $CONFIG_TOML_PATH); do
+          ASSETS_ARRAY+="$asset,"
+        done
+        ASSETS_ARRAY=$(echo $ASSETS_ARRAY | sed 's/,$//')"]"
+        echo "world_name=$SERVER_NAME" >> $GITHUB_OUTPUT
+        echo "world_description=$SERVER_DESCRIPTION" >> $GITHUB_OUTPUT
+        echo "gamemode=$GAME_MODE" >> $GITHUB_OUTPUT
+        echo "gamemap=$MAP" >> $GITHUB_OUTPUT
+        echo "assets=$ASSETS_ARRAY" >> $GITHUB_OUTPUT
+        echo "packages=$PACKAGES_JSON" >> $GITHUB_OUTPUT
 
     - name: Patch World
       id: patch_world

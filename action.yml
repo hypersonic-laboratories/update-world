@@ -205,5 +205,11 @@ runs:
         echo "Generated JSON Payload: $json_payload"
         echo -e "\n"
         response=$(curl --no-progress-meter --request PATCH --location "${MASTER_ENDPOINT}/world" --header 'Content-Type: application/json' --header "Token: ${ACCESS_TOKEN}" --data "$json_payload")
+        code=$(echo $response | jq -r '.code')
+        message=$(echo $response | jq -r '.message')
+        if [ "$code" != "0" ]; then
+          echo "Error: Server returned error code $code with message '$message'"
+          exit 1
+        fi
         echo $response
 

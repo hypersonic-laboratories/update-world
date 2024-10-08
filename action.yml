@@ -139,9 +139,10 @@ runs:
       id: patch_world
       shell: bash
       env:
+        WORLD_ID: ${{ steps.get_world_info.outputs.world_id }}
+        WORLD_NAME: ${{ steps.get_world_info.outputs.world_name }}
         ACCESS_TOKEN: ${{ inputs.access_token }}
         MASTER_ENDPOINT: ${{ inputs.master_endpoint }}
-        WORLD_ID: ${{ inputs.world_id }}
         TITLE: ${{ inputs.title }}
         DESCRIPTION: ${{ inputs.description }}
         MAX_PLAYERS: ${{ inputs.max_players }}

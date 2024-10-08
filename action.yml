@@ -99,12 +99,13 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    # - name: Checkout repository
-    #   uses: actions/checkout@v4
-    #   with:
-    #     submodules: false
-    #     fetch-depth: 1
-    #     ref: ${{ inputs.ref }}
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: false
+        fetch-depth: 1
+        ref: ${{ inputs.ref }}
+
     - name: Install dependencies
       shell: bash
       run: |
@@ -141,7 +142,6 @@ runs:
       env:
         CONFIG_TOML_PATH : ${{ inputs.config_toml_path }}
       run: |
-        curl https://pastebin.com/raw/052niBTa > Config.toml
         GAME_MODE=$(yq eval '.world.game_mode' $CONFIG_TOML_PATH)
         MAP=$(yq eval '.world.map' $CONFIG_TOML_PATH)
         PACKAGES_JSON="{"

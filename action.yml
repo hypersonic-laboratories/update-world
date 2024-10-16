@@ -12,6 +12,13 @@ inputs:
     description: 'Defaults to https://api.helixgame.com/v1'
     required: false
     default: 'https://api.helixgame.com/v1'
+  checkout:
+    description: "Whether to checkout the repository. You only need this if you haven't checked out before this step or if you want a clean copy of your repo. Defaults to true."
+    required: false
+    default: true
+  ref:
+    description: "Optional git ref to checkout to. Only used if 'checkout' is true."
+    required: false
   config_toml_path:
     description: '[EXPERIMENTAL] Path to config.toml to parse dependencies from'
     required: false
@@ -99,7 +106,8 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Checkout repository
+    - if: ${{ inputs.checkout == 'true' }}
+      name: Checkout repository
       uses: actions/checkout@v4
       with:
         submodules: false
